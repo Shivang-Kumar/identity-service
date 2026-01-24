@@ -24,7 +24,7 @@ public class UserEntity {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
-	String id;	
+	Integer id;	
 	
 	@Email
 	@NotNull

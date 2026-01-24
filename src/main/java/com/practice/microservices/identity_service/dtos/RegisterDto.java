@@ -6,14 +6,8 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 
 public record RegisterDto(
-		
-		String email,
-		String passwordHash,
-		String firstName,
-		String lastName,
-		Integer phone,
-		@Enumerated(EnumType.STRING)
-		Role role
-		) {
+
+		String email, String passwordHash, String firstName, String lastName, Integer phone,
+		@Enumerated(EnumType.STRING) Role role) {
 
 }
