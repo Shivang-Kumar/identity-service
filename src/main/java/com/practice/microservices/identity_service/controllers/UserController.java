@@ -23,14 +23,7 @@ public class UserController {
 	 @PostMapping("/api/v1/auth/register")
 	 public ResponseEntity<Result> registerUser(@RequestBody RegisterDto registerUser)
 	 {
-		 try {
 		 Result  newUser=this.userService.registerUser(registerUser);
 		 return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
-		 }
-		 catch(Exception e){
-			 
-			 //Ideally should be handled by the Exception Handler classes
-			 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new Result(false,"Could not register user please try gain after sometime!",null));
-		 }
 	 }
 }
