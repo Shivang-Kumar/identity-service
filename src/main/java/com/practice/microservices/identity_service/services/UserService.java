@@ -7,4 +7,9 @@ public interface UserService {
 
 	Result registerUser(RegisterDto register);
 
+	Result getAllUsers();
+
+
+	Result getUserById(Integer id);
+
 }

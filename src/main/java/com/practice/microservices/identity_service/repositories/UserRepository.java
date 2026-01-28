@@ -9,3 +9,4 @@ import com.practice.microservices.identity_service.entity.UserEntity;
 public interface UserRepository extends JpaRepository<UserEntity, Integer>  {
 
 }
+
