@@ -13,8 +13,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.practice.microservices.identity_service.convertor.RegisterDtoToUserConverter;
-import com.practice.microservices.identity_service.dtos.RegisterDto;
+import com.practice.microservices.identity_service.convertor.UserDtoToUserConverter;
+import com.practice.microservices.identity_service.dtos.UserDto;
 import com.practice.microservices.identity_service.entity.AccountStatus;
 import com.practice.microservices.identity_service.entity.Role;
 import com.practice.microservices.identity_service.entity.UserEntity;
@@ -29,7 +29,7 @@ public class UserServiceTest {
 	UserRepository userRepository;
 	
 	@Mock
-	RegisterDtoToUserConverter userConverter;
+	UserDtoToUserConverter userConverter;
 	
 	@InjectMocks
 	UserServiceImpl userService;
@@ -37,8 +37,8 @@ public class UserServiceTest {
 	@Test
 	void registerUser_shouldSaveUserAndReturnSuccessResult()
 	{
-		RegisterDto registerDto=new RegisterDto("myemail414@gmail.com","mypassword", "firstname", "lastname", 1549080807 , Role.CUSTOMER);
-		UserEntity user=new UserEntity(null, registerDto.email(), registerDto.passwordHash(),registerDto.firstName(),registerDto.lastName(), registerDto.phone(), registerDto.role(),AccountStatus.DISABLED,false, Instant.now(), Instant.now(),Instant.now());
+		UserDto registerDto=new UserDto("myemail414@gmail.com","mypassword", "firstname", "lastname", 1549080807 , Role.CUSTOMER);
+		UserEntity user=new UserEntity(null, registerDto.email(), registerDto.password(),registerDto.firstName(),registerDto.lastName(), registerDto.phone(), registerDto.role(),AccountStatus.DISABLED,false, Instant.now(), Instant.now(),Instant.now());
 		
 		//given 
 		given(this.userConverter.convertRegisterDtoToUser(registerDto)).willReturn(user);
@@ -56,8 +56,8 @@ public class UserServiceTest {
 	@Test
 	void registerUser_shouldThrowError()
 	{
-		RegisterDto registerDto=new RegisterDto("myemail414@gmail.com","mypassword", "firstname", "lastname", 1549080807 , Role.CUSTOMER);
-		UserEntity user=new UserEntity(null, registerDto.email(), registerDto.passwordHash(),registerDto.firstName(),registerDto.lastName(), registerDto.phone(), registerDto.role(),AccountStatus.DISABLED,false, Instant.now(), Instant.now(),Instant.now());
+		UserDto registerDto=new UserDto("myemail414@gmail.com","mypassword", "firstname", "lastname", 1549080807 , Role.CUSTOMER);
+		UserEntity user=new UserEntity(null, registerDto.email(), registerDto.password(),registerDto.firstName(),registerDto.lastName(), registerDto.phone(), registerDto.role(),AccountStatus.DISABLED,false, Instant.now(), Instant.now(),Instant.now());
 		
 		//given 
 		given(this.userConverter.convertRegisterDtoToUser(registerDto)).willReturn(user);
