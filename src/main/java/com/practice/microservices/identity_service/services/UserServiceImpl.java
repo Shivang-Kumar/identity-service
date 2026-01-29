@@ -2,11 +2,14 @@ package com.practice.microservices.identity_service.services;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.practice.microservices.identity_service.convertor.RegisterDtoToUserConverter;
-import com.practice.microservices.identity_service.dtos.RegisterDto;
+import com.practice.microservices.identity_service.convertor.UserDtoToUserConverter;
+import com.practice.microservices.identity_service.dtos.UserDto;
 import com.practice.microservices.identity_service.entity.UserEntity;
 import com.practice.microservices.identity_service.repositories.UserRepository;
 import com.practice.microservices.identity_service.utility.Result;
@@ -18,18 +21,21 @@ import lombok.AllArgsConstructor;
 public class UserServiceImpl implements UserService {
 		
 	UserRepository userRepository;
-	RegisterDtoToUserConverter userConverter;
+	UserDtoToUserConverter userConverter;
+	PasswordEncoder passwordEncoder;
 
 	@Override
-	public Result registerUser(RegisterDto registerDto) {
+	public Result registerUser(UserDto registerDto) {
 	
 		try {
 		UserEntity user=userConverter.convertRegisterDtoToUser(registerDto);
+		user.setPasswordHash(passwordEncoder.encode(registerDto.password()));
 		UserEntity savedUser=userRepository.save(user);
 		return new Result(true,"Account Created Successfully",savedUser);
 		}
 		catch(Exception e)
 		{
+			System.out.println(e);
 			throw new RuntimeException("Could not save user to database, please try agin after sometime!");
 		}
 	}
@@ -41,7 +47,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Result getUserById(Integer id) {
+	public Result getUserById(UUID id) {
 		Optional<UserEntity> user=userRepository.findById(id);
 		return  new Result(true,"Found User By Id",user.get());
 	}

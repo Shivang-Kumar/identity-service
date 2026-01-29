@@ -1,6 +1,9 @@
 package com.practice.microservices.identity_service.entity;
 
 import java.time.Instant;
+import java.util.UUID;
+
+import org.hibernate.annotations.GenericGenerator;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -23,8 +26,9 @@ import lombok.Setter;
 public class UserEntity {
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	Integer id;	
+	@GeneratedValue(generator = "UUID")
+	@GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+	UUID id;	
 	
 	@Email
 	@NotNull
