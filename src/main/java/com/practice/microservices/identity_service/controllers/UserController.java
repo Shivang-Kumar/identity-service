@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +24,7 @@ public class UserController {
 	private final UserService userService;
 	
 	 @PostMapping("/api/v1/auth/register")
-	 public ResponseEntity<Result> registerUser(@RequestBody UserDto registerUser)
+	 public ResponseEntity<Result> registerUser(@Validated @RequestBody UserDto registerUser)
 	 {
 		 Result  newUser=this.userService.registerUser(registerUser);
 		 return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
