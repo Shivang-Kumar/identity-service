@@ -6,10 +6,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -33,6 +37,9 @@ public class UserServiceTest {
 	
 	@InjectMocks
 	UserServiceImpl userService;
+	
+	@Mock
+	PasswordEncoder passwordEncoder;
 	
 	@Test
 	void registerUser_shouldSaveUserAndReturnSuccessResult()
@@ -62,6 +69,7 @@ public class UserServiceTest {
 		//given 
 		given(this.userConverter.convertRegisterDtoToUser(registerDto)).willReturn(user);
 		given(this.userRepository.save(user)).willThrow(new RuntimeException());
+		given(this.passwordEncoder.encode(registerDto.password())).willReturn("%HS&DH");
 		
 		
 		// when and then
