@@ -1,6 +1,8 @@
 package com.practice.microservices.identity_service.user;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -56,6 +58,19 @@ public class UserController {
 
 	}
 	
+	@Test
+	void registerUser_should_return500_WhenServiceFails() throws Exception
+	{
+		UserDto userDto=new UserDto("abc@gmail.com","myPassword","shiv","kumar",78405014,Role.CUSTOMER);
+		String json=this.objectMapper.writeValueAsString(userDto);
+		
+		when(this.userService.registerUser(any(UserDto.class))).thenThrow(new RuntimeException("Could not save user to database, please try agin after sometime!"));
 	
-
+		this.mockMvc.perform(post("/api/v1/auth/register")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(json)
+				.accept(MediaType.APPLICATION_JSON))
+		.andExpect(jsonPath("$.flag").value("false"))
+		.andExpect(jsonPath("$.message").value("\"Could not save user to database, please try agin after sometime!"));
+	}
 }
