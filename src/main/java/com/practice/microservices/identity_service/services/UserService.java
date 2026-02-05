@@ -3,6 +3,7 @@ package com.practice.microservices.identity_service.services;
 import java.util.UUID;
 
 import com.practice.microservices.identity_service.dtos.UserDto;
+import com.practice.microservices.identity_service.entity.UserEntity;
 import com.practice.microservices.identity_service.utility.Result;
 
 public interface UserService {
@@ -13,5 +14,7 @@ public interface UserService {
 
 
 	Result getUserById(UUID id);
+
+	Result updateUserById(UUID userId, UserEntity user);
 
 }

@@ -1,10 +1,14 @@
 package com.practice.microservices.identity_service.logging;
 	
 
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -46,5 +50,20 @@ import com.practice.microservices.identity_service.dtos.UserDto;
 		  }
 			
 		}
-
+		
+		@AfterReturning("execution(* com.practice.microservices.identity_service.controllers.UserController.updateUser(..))")
+		public void  updateLogSuccess(JoinPoint joinPoint)
+		{
+			Object[] args=joinPoint.getArgs();
+			logger.info("Update Method Called for user with id {} and email {}",args[0],args[1]);
+		}
+		
+		@AfterThrowing(pointcut="execution(* com.practice.microservices.identity_service.controllers.UserController.updateUser(..))"
+		 , throwing="catchException")
+		public void updateLogFailure(Exception catchException)
+		{
+			  logger.error("User registration failed | reason={}",
+					  catchException.getMessage());
+		}
+		
 	}
