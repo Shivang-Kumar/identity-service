@@ -8,10 +8,12 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.practice.microservices.identity_service.dtos.UserDto;
+import com.practice.microservices.identity_service.entity.UserEntity;
 import com.practice.microservices.identity_service.services.UserService;
 import com.practice.microservices.identity_service.utility.Result;
 
@@ -42,6 +44,13 @@ public class UserController {
 	 {
 		 Result user=this.userService.getUserById(userId);
 		 return ResponseEntity.status(HttpStatus.OK).body(user);
+	 }
+	 
+	 @PutMapping("/api/v1/user/{id}")
+	 public ResponseEntity<Result> updateUserById(@PathVariable("id") UUID userId,@RequestBody UserEntity updateUser)
+	 {
+		 Result user=this.userService.updateUserById(userId,updateUser);
+		 return  ResponseEntity.status(HttpStatus.OK).body(user);
 	 }
 	 
 	 
