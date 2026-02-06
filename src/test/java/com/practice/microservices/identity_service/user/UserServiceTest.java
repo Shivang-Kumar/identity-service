@@ -1,6 +1,8 @@
 package com.practice.microservices.identity_service.user;
 
 import java.time.Instant;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
@@ -77,5 +80,48 @@ public class UserServiceTest {
 		verify(userRepository,times(1)).save(user);
 		verify(userConverter,times(1)).convertRegisterDtoToUser(registerDto);
 	}
+	
+	
+	@Test
+	void updateUserById_Success()
+	{
+		UserDto registerDto=new UserDto("myemail2414@gmail.com","mypassword", "newFirstName", "newLastName", 1549080807 , Role.CUSTOMER);
+		UserEntity user=new UserEntity(UUID.randomUUID(),"myemail414@gmail.com", "mypassword","originalName","lastName", 1549080807, Role.CUSTOMER,AccountStatus.DISABLED,false, Instant.now(), Instant.now(),Instant.now());
+		
+		given(this.userRepository.findById(any(UUID.class))).willReturn(Optional.of(user));
+		given(this.userRepository.save(any(UserEntity.class))).willReturn(user);
+		
+		//when
+		Result savedUser=this.userService.updateUserById(UUID.randomUUID(), registerDto);
+		
+		
+		//assert
+		assertThat(savedUser.getMessage()).isEqualTo("User Updated Successfully");
+		UserEntity newSavedUser=(UserEntity)savedUser.getData();
+		assertThat(newSavedUser.getFirstName()).isEqualTo("newFirstName");
+		assertThat(newSavedUser.getLastName()).isEqualTo("newLastName");
+		assertThat(newSavedUser.getEmail()).isEqualTo("myemail414@gmail.com");
+
+	}
+	
+	@Test
+	void updateUserById_WhereUserIdDoesNotExits()
+	{
+		UserDto registerDto=new UserDto("myemail2414@gmail.com","mypassword", "newFirstName", "newLastName", 1549080807 , Role.CUSTOMER);
+		UserEntity user=new UserEntity(UUID.randomUUID(),"myemail414@gmail.com", "mypassword","originalName","lastName", 1549080807, Role.CUSTOMER,AccountStatus.DISABLED,false, Instant.now(), Instant.now(),Instant.now());
+		
+		given(this.userRepository.findById(any(UUID.class))).willReturn(Optional.empty());
+		
+		//when+then
+		RuntimeException exception= assertThrows(RuntimeException.class,()-> userService.updateUserById(UUID.randomUUID(), registerDto));
+		
+		
+		//assert
+		assertThat(exception.getMessage()).isEqualTo("Cannot find user with this UUID");
+		verify(userRepository,times(1)).findById(UUID.randomUUID());
+		verify(userRepository,times(0)).save(any(UserEntity.class));
+
+	}
+
 
 }

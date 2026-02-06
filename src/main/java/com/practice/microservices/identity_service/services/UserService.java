@@ -15,6 +15,6 @@ public interface UserService {
 
 	Result getUserById(UUID id);
 
-	Result updateUserById(UUID userId, UserEntity user);
+	Result updateUserById(UUID userId, UserDto updateUser);
 
 }
