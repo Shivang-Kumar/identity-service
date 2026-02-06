@@ -54,13 +54,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Result updateUserById(UUID userId,UserEntity updatedUser) {
+	public Result updateUserById(UUID userId,UserDto updatedUser) {
 		
 		UserEntity savedUser= userRepository.findById(userId).map(oldUser -> {
 			oldUser.setUpdatedAt(Instant.now());
-			oldUser.setPhone(updatedUser.getPhone());
-			oldUser.setFirstName(updatedUser.getFirstName());
-			oldUser.setLastName(updatedUser.getLastName());
+			oldUser.setPhone(updatedUser.phone());
+			oldUser.setFirstName(updatedUser.firstName());
+			oldUser.setLastName(updatedUser.lastName());
 			
 			return this.userRepository.save(oldUser);
 		}).orElseThrow(() -> new RuntimeException("Cannot find user with this UUID"));

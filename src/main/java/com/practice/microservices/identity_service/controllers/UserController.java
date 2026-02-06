@@ -1,4 +1,4 @@
-package com.practice.microservices.identity_service.controllers;
+ 	package com.practice.microservices.identity_service.controllers;
 
 import java.util.UUID;
 
@@ -46,8 +46,8 @@ public class UserController {
 		 return ResponseEntity.status(HttpStatus.OK).body(user);
 	 }
 	 
-	 @PutMapping("/api/v1/user/{id}")
-	 public ResponseEntity<Result> updateUserById(@PathVariable("id") UUID userId,@RequestBody UserEntity updateUser)
+	 @PutMapping("/api/v1/users/{id}")
+	 public ResponseEntity<Result> updateUserById(@PathVariable("id") UUID userId,@RequestBody UserDto updateUser)
 	 {
 		 Result user=this.userService.updateUserById(userId,updateUser);
 		 return  ResponseEntity.status(HttpStatus.OK).body(user);
