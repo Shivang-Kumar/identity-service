@@ -4,6 +4,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import java.time.Instant;
@@ -72,5 +74,34 @@ public class UserController {
 				.accept(MediaType.APPLICATION_JSON))
 		.andExpect(jsonPath("$.flag").value("false"))
 		.andExpect(jsonPath("$.message").value("Could not save user to database, please try again after sometime!"));
+	}
+	
+	
+	@Test
+	public void updateUserById_Success() throws Exception
+	{
+		UUID userId=UUID.randomUUID();
+		UserDto userDto=new UserDto("abc@gmail.com","myPassword","shiv","kumar",78405014,Role.CUSTOMER);
+		UserEntity user=new UserEntity(null, "abc@gmail.com","myPassword","shiv","kumar",78405014,Role.CUSTOMER,AccountStatus.DISABLED,false, Instant.now(), Instant.now(),Instant.now());
+		String json=this.objectMapper.writeValueAsString(userDto);
+		given(this.userService.updateUserById(userId, userDto)).willReturn(new Result(true,"User Updated Successfully",user));
+		
+		
+		this.mockMvc.perform(put("/api/v1/users/{id}",userId).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).content(json))
+		.andExpect(jsonPath("$.flag").value("true"))
+		.andExpect(jsonPath("$.message").value("User Updated Successfully"));
+		
+	}
+	
+	@Test
+	public void updateUserById_Fails_WhenUserId_IsNotFound() throws Exception
+	{		
+		UUID userId=UUID.randomUUID();
+		UserDto userDto=new UserDto("abc@gmail.com","myPassword","shiv","kumar",78405014,Role.CUSTOMER);
+		String json=this.objectMapper.writeValueAsString(userDto);
+		when(this.userService.updateUserById(any(UUID.class),any(UserDto.class))).thenThrow(new RuntimeException("Cannot find user with this UUID"));
+		this.mockMvc.perform(put("/api/v1/users/{id}",userId).contentType(MediaType.APPLICATION_JSON).content(json).accept(MediaType.APPLICATION_JSON))
+		.andExpect(jsonPath("$.flag").value("false"))
+		.andExpect(jsonPath("$.message").value("Cannot find user with this UUID"));
 	}
 }

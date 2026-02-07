@@ -118,7 +118,7 @@ public class UserServiceTest {
 		
 		//assert
 		assertThat(exception.getMessage()).isEqualTo("Cannot find user with this UUID");
-		verify(userRepository,times(1)).findById(UUID.randomUUID());
+		verify(userRepository,times(1)).findById(any(UUID.class));
 		verify(userRepository,times(0)).save(any(UserEntity.class));
 
 	}
