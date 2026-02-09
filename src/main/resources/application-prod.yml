@@ -1,0 +1,10 @@
+server: 
+ port: 8082
+spring:
+ datasource:
+  url: ${datasource_url}
+  username: ${datasource_name}
+  password: ${datasource_password}
+ jpa:
+  hibernate:
+   ddl-auto: update
