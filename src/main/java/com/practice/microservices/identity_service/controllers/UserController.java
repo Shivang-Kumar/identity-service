@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.practice.microservices.identity_service.dtos.UserDto;
@@ -52,6 +53,15 @@ public class UserController {
 		 Result user=this.userService.updateUserById(userId,updateUser);
 		 return  ResponseEntity.status(HttpStatus.OK).body(user);
 	 }
+	 
+
+	 
+//   Will be required when we want jwt
+//	 @PostMapping("/api/v1/login")
+//	 public ResponseEntity<Result> login(@RequestBody AuthRequest auth)
+//	 {
+//		 
+//	 }
 	 
 	 
 	 
