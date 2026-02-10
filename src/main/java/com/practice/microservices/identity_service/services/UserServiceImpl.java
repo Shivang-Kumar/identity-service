@@ -29,10 +29,17 @@ public class UserServiceImpl implements UserService {
 	public Result registerUser(UserDto registerDto) {
 	
 		try {
+		userRepository.findByEmail(registerDto.email()).ifPresent(user -> {
+			throw new RuntimeException("User with this email already exits");
+		});
 		UserEntity user=userConverter.convertRegisterDtoToUser(registerDto);
-		user.setPasswordHash(passwordEncoder.encode(registerDto.password()));
+		user.setPassword(passwordEncoder.encode(registerDto.password()));
 		UserEntity savedUser=userRepository.save(user);
 		return new Result(true,"Account Created Successfully",savedUser);
+		}
+		catch(RuntimeException e)
+		{
+			throw e;
 		}
 		catch(Exception e)
 		{
