@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,7 +16,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.practice.microservices.identity_service.dtos.UserDto;
+import com.practice.microservices.identity_service.dtos.marker.AuthRequest;
 import com.practice.microservices.identity_service.entity.UserEntity;
+import com.practice.microservices.identity_service.security.JwtUtils;
 import com.practice.microservices.identity_service.services.UserService;
 import com.practice.microservices.identity_service.utility.Result;
 
@@ -25,6 +29,7 @@ import lombok.AllArgsConstructor;
 public class UserController {
 	
 	private final UserService userService;
+	private final AuthenticationManager authenticationManager;
 	
 	 @PostMapping("/api/v1/auth/register")
 	 public ResponseEntity<Result> registerUser(@Validated @RequestBody UserDto registerUser)
@@ -54,14 +59,16 @@ public class UserController {
 		 return  ResponseEntity.status(HttpStatus.OK).body(user);
 	 }
 	 
-
 	 
-//   Will be required when we want jwt
-//	 @PostMapping("/api/v1/login")
-//	 public ResponseEntity<Result> login(@RequestBody AuthRequest auth)
-//	 {
-//		 
-//	 }
+	 @PostMapping("/api/v1/login")
+	 public ResponseEntity<Result> generateToken(@Validated(AuthRequest.class) @RequestBody UserDto authRequest)
+	 {
+		 authenticationManager.authenticate(
+			new UsernamePasswordAuthenticationToken(authRequest.email(),authRequest.password())
+				 );
+		String jwtToken=JwtUtils.generateToken(authRequest.email());
+		return ResponseEntity.status(HttpStatus.OK).body(new Result(true,"JWT Token Created Successfully",jwtToken));
+	 }
 	 
 	 
 	 
