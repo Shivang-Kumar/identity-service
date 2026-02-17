@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,8 +14,10 @@ import com.practice.microservices.identity_service.convertor.UserDtoToUserConver
 import com.practice.microservices.identity_service.dtos.UserDto;
 import com.practice.microservices.identity_service.entity.UserEntity;
 import com.practice.microservices.identity_service.repositories.UserRepository;
+import com.practice.microservices.identity_service.security.JwtUtils;
 import com.practice.microservices.identity_service.utility.Result;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -24,7 +27,9 @@ public class UserServiceImpl implements UserService {
 	UserRepository userRepository;
 	UserDtoToUserConverter userConverter;
 	PasswordEncoder passwordEncoder;
-
+	RedisCacheClient redisTemplate;
+	JwtUtils jwtUtils;
+ 
 	@Override
 	public Result registerUser(UserDto registerDto) {
 	
@@ -74,6 +79,21 @@ public class UserServiceImpl implements UserService {
 		
 		return new Result(true,"User Updated Successfully",savedUser);
 	}
+//
+//	@Override
+//	public void invalidateToken(HttpServletRequest request) {
+//		String authHeader=request.getHeader("Authorization");
+//		if(authHeader==null||authHeader.startsWith("Bearer ")==false)
+//		{
+//			throw new RuntimeException("Bad Request JWT Token is required");
+//		}
+//		
+//		String token=authHeader.substring(7);
+//		String timeLeft=this.jwtUtils.getTimeLeft(token);
+//		redisTemplate.set("Blacklisted:"+token, "true" , timeLeft, TimeUnit.MILLISECONDS);
+//		
+//		
+//	}
 	
 	
 	

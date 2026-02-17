@@ -22,6 +22,7 @@ import com.practice.microservices.identity_service.security.JwtUtils;
 import com.practice.microservices.identity_service.services.UserService;
 import com.practice.microservices.identity_service.utility.Result;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 
 @RestController
@@ -69,6 +70,12 @@ public class UserController {
 		String jwtToken=JwtUtils.generateToken(authRequest.email());
 		return ResponseEntity.status(HttpStatus.OK).body(new Result(true,"JWT Token Created Successfully",jwtToken));
 	 }
+	 
+//	 @PostMapping("/api/v1/logout")
+//	 public ResponseEntity<Result> invalidateToken(HttpServletRequest request)
+//	 {
+//		 this.userService.invalidateToken(request);
+//	 }
 	 
 	 
 	 
