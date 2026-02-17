@@ -1,0 +1,13 @@
+version: '3.4'
+
+services:
+  identity-redis:
+   image: redis
+   ports:
+    - 6379:6379
+
+  identity-redis-insights:
+   image: redis/redisinsight:latest
+   container_name: identity-redis-insight
+   ports:
+    - 5540:5540 

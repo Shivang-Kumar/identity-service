@@ -52,4 +52,8 @@ public class JwtUtils {
 		return extractClaims(token).getExpiration().before(new Date());
 	}
 
+//	public Integer getTimeLeft(String token) {
+//		return extractClaims(token).getExpiration().compareTo(new Date(System.currentTimeMillis()));
+//	}
+
 }

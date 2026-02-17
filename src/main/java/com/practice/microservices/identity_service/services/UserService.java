@@ -6,6 +6,8 @@ import com.practice.microservices.identity_service.dtos.UserDto;
 import com.practice.microservices.identity_service.entity.UserEntity;
 import com.practice.microservices.identity_service.utility.Result;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 public interface UserService {
 
 	Result registerUser(UserDto register);
@@ -16,5 +18,7 @@ public interface UserService {
 	Result getUserById(UUID id);
 
 	Result updateUserById(UUID userId, UserDto updateUser);
+
+	//void invalidateToken(HttpServletRequest request);
 
 }
