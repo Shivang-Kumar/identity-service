@@ -19,6 +19,7 @@ public interface UserService {
 
 	Result updateUserById(UUID userId, UserDto updateUser);
 
-	//void invalidateToken(HttpServletRequest request);
+
+	void invalidateToken(HttpServletRequest request);
 
 }

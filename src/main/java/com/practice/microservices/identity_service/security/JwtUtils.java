@@ -8,18 +8,24 @@ import javax.crypto.SecretKey;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import com.practice.microservices.identity_service.services.RedisCacheClient;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.InvalidKeyException;
 import io.jsonwebtoken.security.Keys;
+import lombok.AllArgsConstructor;
 
 @Component
+@AllArgsConstructor
 public class JwtUtils {
 	
 	private static final String secret="My-super-hard-to-crack-secret-no-one-can-even-think-about-it-Its-that-hard";
 	
 	private static final SecretKey key=Keys.hmacShaKeyFor(secret.getBytes());
+	
+	private final RedisCacheClient redisClient;;
 	
 	public static final String generateToken(String subject) throws InvalidKeyException
 	{
@@ -44,7 +50,7 @@ public class JwtUtils {
 	
 	public boolean validateToken(String username,UserDetails userDetails,String token)
 	{
-		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token) && redisClient.get("Blacklisted:"+token)==null);
 	}
 	
 	private static boolean isTokenExpired(String token)
@@ -52,8 +58,11 @@ public class JwtUtils {
 		return extractClaims(token).getExpiration().before(new Date());
 	}
 
-//	public Integer getTimeLeft(String token) {
-//		return extractClaims(token).getExpiration().compareTo(new Date(System.currentTimeMillis()));
-//	}
+	public Long getTimeLeft(String token) {
+	    return extractClaims(token)
+	            .getExpiration()
+	            .getTime() - System.currentTimeMillis();
+	}
+
 
 }
