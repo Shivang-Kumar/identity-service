@@ -1,5 +1,6 @@
 package com.practice.microservices.identity_service.repositories;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,6 +10,8 @@ import com.practice.microservices.identity_service.entity.UserEntity;
 
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, UUID>  {
+	
+	Optional<UserEntity> findByEmail(String emailId);
 
 }
 
