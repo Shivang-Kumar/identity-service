@@ -18,8 +18,8 @@ public class SecurityConfig {
 		http
 		.csrf(csrf -> csrf.disable())
 		.cors(Customizer.withDefaults())
-		.authorizeHttpRequests(auth -> auth.requestMatchers("/api/v1/**").permitAll()
-		.anyRequest().authenticated());
+		.authorizeHttpRequests(auth -> auth.requestMatchers("/api/v1/**").permitAll())
+		.authorizeHttpRequests(auth -> auth.requestMatchers("/actuator/**").permitAll());
 		
 		return http.build();
 	}
