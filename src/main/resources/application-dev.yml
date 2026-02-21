@@ -22,3 +22,6 @@ management:
   redis:
    host: localhost
    port: 6379 
+ tracing:
+  sampling:
+    probability: 1.0
