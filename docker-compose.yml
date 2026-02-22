@@ -1,6 +1,15 @@
 version: '3.4'
 
 services:
+  identity-service:
+   build: .
+   image: identity-service
+   container_name: identity-service
+   ports:
+    - "8081:8081"
+   networks:
+    - observability
+  
   identity-redis:
    image: redis
    ports:
@@ -42,7 +51,7 @@ services:
     - observability
 
   promtail:
-   image: grafana/promtail:2.9.4
+   image: grafana/promtail:latest
    container_name: identity-promtail
    volumes:
      - /var/run/docker.sock:/var/run/docker.sock
