@@ -20,7 +20,7 @@ management:
    show-details: always
  data:
   redis:
-   host: localhost
+   host: docker
    port: 6379 
  tracing:
   sampling:
