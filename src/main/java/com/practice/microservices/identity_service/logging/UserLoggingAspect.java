@@ -1,69 +1,75 @@
 package com.practice.microservices.identity_service.logging;
-	
 
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.After;
-import org.aspectj.lang.annotation.AfterReturning;
-import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import com.practice.microservices.identity_service.dtos.UserDto;
 
-	@Aspect
-	@Component
-	public class UserLoggingAspect {
-		
-		private static  final Logger logger=LoggerFactory.getLogger(UserLoggingAspect.class);
-		
-		@Around("execution(* com.practice.microservices.identity_service.controllers.UserController.registerUser(..))")
-		public Object registerLog(ProceedingJoinPoint  joinPoint) throws Throwable{
-			
-			long startTime=System.currentTimeMillis();
-			String methodName=joinPoint.getSignature().getName();
-			logger.info("API called: {}",methodName);
-			
-			for(Object arg: joinPoint.getArgs())
-			{
-				if(arg instanceof UserDto req)
-				{
-					logger.info("Register Request | username={} | email={}",req.firstName(),req.email());
-				}
-				
-			}
-			
-		  try {
-			  Object result=joinPoint.proceed();
-			  long timeTaken=System.currentTimeMillis()-startTime;
-			  logger.info("API Suceess:{} | time:{}ms",methodName, timeTaken);
-			  return result;
-		  }
-		  catch (Exception ex)
-		  {
-			  logger.error("API failed: {} | reason={}",methodName,ex.getMessage(),ex);
-			  throw ex;
-		  }
-			
-		}
-		
-		@AfterReturning("execution(* com.practice.microservices.identity_service.controllers.UserController.updateUser(..))")
-		public void  updateLogSuccess(JoinPoint joinPoint)
-		{
-			Object[] args=joinPoint.getArgs();
-			logger.info("Update Method Called for user with id {} and email {}",args[0],args[1]);
-		}
-		
-		@AfterThrowing(pointcut="execution(* com.practice.microservices.identity_service.controllers.UserController.updateUser(..))"
-		 , throwing="catchException")
-		public void updateLogFailure(Exception catchException)
-		{
-			  logger.error("User registration failed | reason={}",
-					  catchException.getMessage());
-		}
-		
-	}
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+
+@Aspect
+@Component
+@Slf4j
+public class UserLoggingAspect {
+
+    @Around("execution(* com.practice.microservices.identity_service.controllers.*.*(..))")
+    public Object logApiCall(ProceedingJoinPoint joinPoint) throws Throwable {
+
+        long startTime = System.currentTimeMillis();
+
+        HttpServletRequest request =
+                ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
+                        .getRequest();
+
+        String httpMethod = request.getMethod();
+        String uri = request.getRequestURI();
+        String methodName = joinPoint.getSignature().toShortString();
+
+        log.info("Incoming request → {} {} | method={}",
+                httpMethod,
+                uri,
+                methodName
+        );
+
+        // Log DTOs safely
+        for (Object arg : joinPoint.getArgs()) {
+            if (arg instanceof UserDto req) {
+                log.info("Request payload → username={} email={}",
+                        req.firstName(),
+                        req.email()
+                );
+            }
+        }
+
+        try {
+            Object result = joinPoint.proceed();
+
+            long timeTaken = System.currentTimeMillis() - startTime;
+
+            log.info("Request completed → {} {} | timeTaken={}ms",
+                    httpMethod,
+                    uri,
+                    timeTaken
+            );
+
+            return result;
+
+        } catch (Exception ex) {
+
+            long timeTaken = System.currentTimeMillis() - startTime;
+
+            log.error("Request failed → {} {} | timeTaken={}ms | error={}",
+                    httpMethod,
+                    uri,
+                    timeTaken,
+                    ex.getMessage()
+            );
+
+            throw ex;
+        }
+    }
+}

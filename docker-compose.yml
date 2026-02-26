@@ -1,15 +1,6 @@
 version: '3.4'
 
 services:
-  identity-service:
-   build: .
-   image: identity-service
-   container_name: identity-service
-   ports:
-    - "8081:8081"
-   networks:
-    - observability
-  
   identity-redis:
    image: redis
    ports:
