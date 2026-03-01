@@ -2,10 +2,12 @@ package com.practice.microservices.identity_service.services;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.MDC;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,9 @@ import org.springframework.stereotype.Service;
 import com.practice.microservices.identity_service.convertor.UserDtoToUserConverter;
 import com.practice.microservices.identity_service.dtos.UserDto;
 import com.practice.microservices.identity_service.entity.UserEntity;
+import com.practice.microservices.identity_service.notification.EventType;
+import com.practice.microservices.identity_service.notification.NotificationChannel;
+import com.practice.microservices.identity_service.notification.NotificationEvent;
 import com.practice.microservices.identity_service.repositories.UserRepository;
 import com.practice.microservices.identity_service.security.JwtUtils;
 import com.practice.microservices.identity_service.utility.Result;
@@ -29,6 +34,7 @@ public class UserServiceImpl implements UserService {
 	PasswordEncoder passwordEncoder;
 	RedisCacheClient redisTemplate;
 	JwtUtils jwtUtils;
+	NotificationEventPublisher notificationEventPublisher;
 
 	@Override
 	public Result registerUser(UserDto registerDto) {
@@ -40,6 +46,22 @@ public class UserServiceImpl implements UserService {
 			UserEntity user = userConverter.convertRegisterDtoToUser(registerDto);
 			user.setPassword(passwordEncoder.encode(registerDto.password()));
 			UserEntity savedUser = userRepository.save(user);
+			
+			NotificationEvent event = NotificationEvent.builder()
+			        .eventId(UUID.randomUUID().toString())
+			        .traceId(MDC.get("traceId")) 
+			        .eventType(EventType.USER_REGISTERED)
+			        .channel(NotificationChannel.EMAIL)
+			        .recipient(user.getEmail())
+			        .templateId("welcome-email")
+			        .payload(Map.of(
+			                "email", user.getEmail()
+			        ))
+			        .createdAt(Instant.now())
+			        .version("v1")
+			        .build();
+
+			notificationEventPublisher.publish(event);
 			return new Result(true, "Account Created Successfully", savedUser);
 		} catch (RuntimeException e) {
 			throw e;
