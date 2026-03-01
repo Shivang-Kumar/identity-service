@@ -9,6 +9,10 @@ spring:
   driver-class-name: org.h2.Driver
  jpa:
   show-sql: true
+ kafka:
+  producer:
+   value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+   key-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 management:
  endpoints:
